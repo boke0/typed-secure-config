@@ -1,6 +1,5 @@
 {
   "name": "@typed-secure-config/core",
-  "private": true,
   "version": "1.0.0",
   "type": "module",
   "files": [

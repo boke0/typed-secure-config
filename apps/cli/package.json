@@ -1,0 +1,27 @@
+{
+  "name": "@typed-secure-config/cli",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/main.js",
+  "bin": {
+    "typed-secure-config": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.2"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.1.0",
+    "@typed-secure-config/core": "workspace:*",
+    "@types/node": "^22.10.1",
+    "commander": "^12.1.0",
+    "tsx": "^4.19.2",
+    "zod": "^3.23.8"
+  }
+}

@@ -10,7 +10,7 @@ interface Options {
 export default async function typedSecureConfig<T>(options: Options): Promise<T> {
   const directory = options.directory ?? 'config';
   const file = options.file ?? 'default.json';
-  return import(path.join(directory, file)).then((config) => {
+  return import(path.join(directory, file), { assert: { type: 'json' } }).then((config) => {
     const encryptionKey = Buffer.from(options.encryptionKey, 'hex');
     return decryptConfigObject(config, encryptionKey) as T
   })

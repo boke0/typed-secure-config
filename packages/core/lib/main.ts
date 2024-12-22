@@ -14,7 +14,7 @@ export default async function typedSecureConfig<T>(options: Options): Promise<T>
   const file = options.file ?? 'default.json';
   const config = JSON.parse(fs.readFileSync(path.join(directory, file), options.encoding ?? 'utf8'));
   const encryptionKey = Buffer.from(options.encryptionKey, 'hex');
-  return decryptConfigObject(config.default, encryptionKey)
+  return decryptConfigObject(config, encryptionKey)
 }
 
 export function decodeEncryptionKey(encryptionKey: string): Buffer {

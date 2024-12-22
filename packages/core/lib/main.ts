@@ -1,19 +1,20 @@
-import * as path from 'node:path';
 import * as crypto from 'node:crypto';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 interface Options {
   encryptionKey: string;
   directory?: string;
   file?: string;
+  encoding?: 'utf8' | 'ascii';
 }
 
 export default async function typedSecureConfig<T>(options: Options): Promise<T> {
   const directory = options.directory ?? 'config';
   const file = options.file ?? 'default.json';
-  return import(path.join(directory, file), { assert: { type: 'json' } }).then((config) => {
-    const encryptionKey = Buffer.from(options.encryptionKey, 'hex');
-    return decryptConfigObject(config.default, encryptionKey)
-  })
+  const config = JSON.parse(fs.readFileSync(path.join(directory, file), options.encoding ?? 'utf8'));
+  const encryptionKey = Buffer.from(options.encryptionKey, 'hex');
+  return decryptConfigObject(config.default, encryptionKey)
 }
 
 export function decodeEncryptionKey(encryptionKey: string): Buffer {

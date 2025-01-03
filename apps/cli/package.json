@@ -1,6 +1,6 @@
 {
   "name": "@typed-secure-config/cli",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "type": "module",
   "files": [
     "dist"
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^7.1.0",
-    "@typed-secure-config/core": "workspace:*",
+    "@typed-secure-config/core": "^1.1.2",
     "@types/node": "^22.10.1",
     "commander": "^12.1.0",
     "tsx": "^4.19.2",

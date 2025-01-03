@@ -39,10 +39,13 @@ program
   .description('Set a value in the config')
   .action(async () => {
     const options = program.opts()
-    const configDir = options.configDir ?? await input({
-      message: 'Enter the path to place the config file',
-      default: './config/',
-    });
+		let configDir = options.configDir
+		if(!configDir){
+			configDir = await input({
+				message: 'Enter the path to place the config file',
+				default: './config/',
+			});
+		}
     fs.mkdirSync(path.resolve(configDir), { recursive: true });
     fs.writeFileSync(path.join(configDir, '.gitignore'), '_secrets.json', { flag: 'w' });
     fs.writeFileSync(path.join(configDir, 'types.ts'), configSchemaFile, { flag: 'w' });

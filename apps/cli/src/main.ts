@@ -38,7 +38,8 @@ program
   .command('init')
   .description('Set a value in the config')
   .action(async () => {
-    const configDir = await input({
+    const options = program.opts()
+    const configDir = options.configDir ?? await input({
       message: 'Enter the path to place the config file',
       default: './config/',
     });

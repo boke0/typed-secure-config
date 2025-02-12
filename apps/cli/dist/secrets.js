@@ -1,26 +1,29 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import * as crypto from 'node:crypto';
-export function getSecrets(configDir) {
+import { decodeEncryptionKey } from '@typed-secure-config/core';
+export async function getSecrets(configDir) {
     const file = path.join(configDir, '_secrets.json');
     const secrets = JSON.parse(fs.readFileSync(file, 'utf-8'));
-    return Object.fromEntries(Object.entries(secrets).map(([env, secret]) => {
-        return [env, Buffer.from(secret, 'hex')];
-    }));
+    return Object.fromEntries(await Promise.all(Object.entries(secrets).map(async ([env, secret]) => {
+        return [env, await decodeEncryptionKey(secret)];
+    })));
 }
-export function getSecret(configDir, env) {
-    const secrets = getSecrets(configDir);
+export async function getSecret(configDir, env) {
+    const secrets = await getSecrets(configDir);
     if (!(env in secrets)) {
         throw new Error(`No secret for environment ${env}`);
     }
     return secrets[env];
 }
-export function createSecret() {
-    return crypto.randomBytes(32);
+export async function createSecret() {
+    return await crypto.subtle.generateKey({
+        name: 'AES-CBC',
+        length: 256
+    }, true, ['encrypt', 'decrypt']);
 }
-export function writeSecretsFile(configDir, secrets) {
-    return fs.writeFileSync(path.join(configDir, '_secrets.json'), JSON.stringify(Object.fromEntries(Object.entries(secrets).map(([env, secret]) => [
+export async function writeSecretsFile(configDir, secrets) {
+    return fs.writeFileSync(path.join(configDir, '_secrets.json'), JSON.stringify(Object.fromEntries(await Promise.all(Object.entries(secrets).map(async ([env, secret]) => [
         env,
-        secret.toString('hex')
-    ])), null, 2));
+        Buffer.from(await crypto.subtle.exportKey('raw', secret)).toString('hex')
+    ]))), null, 2));
 }

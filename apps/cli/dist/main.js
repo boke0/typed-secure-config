@@ -2,7 +2,6 @@
 import { input, select } from '@inquirer/prompts';
 import { Command } from 'commander';
 import * as fs from 'node:fs';
-import * as crypto from 'node:crypto';
 import * as path from 'node:path';
 import { createSecret, getSecret, getSecrets, writeSecretsFile } from './secrets.js';
 import { getConfigValue, readConfigFile, setConfigValue, whiteConfigFile } from './config.js';
@@ -45,8 +44,8 @@ program
     const env = await input({
         message: 'Enter the new environment name',
     });
-    const newSecret = createSecret();
-    const secrets = getSecrets(configDir);
+    const newSecret = await createSecret();
+    const secrets = await getSecrets(configDir);
     writeSecretsFile(configDir, { ...secrets, [env]: newSecret });
     fs.writeFileSync(path.join(configDir, `${env}.json`), JSON.stringify({}, null, 2), { flag: 'w' });
 });
@@ -99,11 +98,10 @@ program
         message: 'Enter a value',
     });
     const config = readConfigFile(configDir, env);
-    const secret = getSecret(configDir, env);
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv('aes-256-cbc', secret, iv);
-    const crypted = Buffer.concat([cipher.update(value), cipher.final()]);
-    whiteConfigFile(configDir, env, setConfigValue(config, key, { _encrypted: crypted.toString('hex'), _iv: iv.toString('hex') }));
+    const secret = await getSecret(configDir, env);
+    const iv = crypto.getRandomValues(new Uint8Array(16));
+    const cipher = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, secret, Buffer.from(value));
+    whiteConfigFile(configDir, env, setConfigValue(config, key, { _encrypted: Buffer.from(cipher).toString('hex'), _iv: Buffer.from(iv).toString('hex') }));
 });
 program
     .command('get-encrypt')
@@ -122,20 +120,21 @@ program
     }
     else {
         const { _encrypted: encrypted, _iv: iv } = value;
-        const decryptedConfig = decryptConfigValue(encrypted, getSecret(configDir, env), Buffer.from(iv, 'hex'));
+        const decryptedConfig = await decryptConfigValue(encrypted, await getSecret(configDir, env), Buffer.from(iv, 'hex'));
         console.log(decryptedConfig);
     }
 });
 program.parse(process.argv);
-function listEnv(configDir) {
-    const secret = getSecrets(configDir);
+async function listEnv(configDir) {
+    const secret = await getSecrets(configDir);
     return Array.from(Object.keys(secret));
 }
 async function inquireEnvOptions(options) {
     const configDir = path.resolve(options.configDir ?? "config");
+    const envs = await listEnv(configDir);
     const env = options.env ?? await select({
         message: 'Select an environment',
-        choices: listEnv(configDir).map(env => ({
+        choices: envs.map(env => ({
             name: env,
             value: env,
         }))

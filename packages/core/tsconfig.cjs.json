@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
-    "declaration": true,
-    "target": "ESNext",
+    "outDir": "dist/cjs",
+    "declaration": false,
+    "module": "commonjs",
     "useDefineForClassFields": true,
-    "module": "ESNext",
     "esModuleInterop": true,
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",
 

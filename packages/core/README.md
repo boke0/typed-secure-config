@@ -21,20 +21,6 @@ The library provides a default function to load and decrypt configuration files.
 import typedSecureConfig from 'typed-secure-config';
 ```
 
-### Function Signature
-
-```typescript
-typedSecureConfig<T>(options: Options): Promise<T>
-```
-
-#### Options
-
-| Option           | Type     | Description                                                                 |
-|------------------|----------|-----------------------------------------------------------------------------|
-| `encryptionKey`  | `string` | The encryption key (in hexadecimal format) used to decrypt the configuration file. |
-| `directory`      | `string` | (Optional) Path to the directory containing the configuration file. Defaults to `"config"`. |
-| `file`           | `string` | (Optional) Name of the configuration file. Defaults to `"default.json"`.     |
-
 ### Example Usage
 
 #### Configuration File (`config/default.json`)
@@ -45,61 +31,46 @@ typedSecureConfig<T>(options: Options): Promise<T>
     "_encrypted": "<ENCRYPTED HEX CODE>",
     "_iv": "<IV HEX CODE>"
   },
-  "databasePassword": "<PLAIN TEXT>"
+  "databaseUrl": "<PLAIN TEXT>"
 }
 ```
 
 #### Decrypting Configuration
 
+You can read config files from file system:
+
 ```javascript
-import typedSecureConfig from 'typed-secure-config';
+import typedSecureConfig from '@typed-secure-config/core';
 
-async function loadConfig() {
-  const config = await typedSecureConfig({
-    encryptionKey: '<ENCRYPTION KEY HEX CODE>',
-    directory: 'config', // Optional, defaults to 'config'
-    file: 'default.json' // Optional, defaults to 'default.json'
-  });
-
+typedSecureConfig({
+  encryptionKey: '<ENCRYPTION KEY HEX CODE>',
+  directory: './src/config', // Optional, defaults to 'config'
+  file: 'default.json' // Optional, defaults to 'default.json'
+}).then(config => {
   console.log(config);
-}
-
-loadConfig().catch(console.error);
+})
 ```
 
-### Return Value
+Or, you can specify configs by importing json file directory.
 
-The function returns a `Promise<T>` where `T` is the type of your configuration object. You can use TypeScript to define the shape of your configuration for better type safety.
-
-#### Example with TypeScript
-
-```typescript
-interface Config {
-  apiKey: string;
-  databasePassword: string;
-}
+```javascript
+import { decryptConfigObject } from '@typed-secure-config/core';
+import envConfig from 'path/to/config-dir/env.json';
 
 async function loadConfig() {
-  const config = await typedSecureConfig<Config>({
-    encryptionKey: '<ENCRYPTION KEY HEX CODE>',
-  });
-
-  console.log(config.apiKey); // Type-safe access
+  const encryptionKey = await decodeEncryptionKey('<ENCRYPTION KEY HEX CODE>')
+  return decryptConfigObject(
+    envConfig,
+    encryptionKey
+  ).then(config => {
+    console.log(config);
+    return config
+  })
 }
+
+loadConfig()
 ```
-
-### Error Handling
-
-If the configuration file cannot be found or decrypted, the returned `Promise` will reject with an error. Use `try...catch` or `.catch()` to handle errors gracefully.
-
-### Default Values
-
-If no `directory` or `file` is provided:
-- The library defaults to loading `config/default.json`.
-
----
 
 ## Security Notes
 
-- Ensure that the `encryptionKey` is stored securely (e.g., environment variables or a secure key management system).
-- Only trusted users should have access to the configuration directory.
+Ensure that the `encryptionKey` is stored securely (e.g., environment variables or a secure key management system).

@@ -8,7 +8,15 @@ Typed Secure Config CLI
 Install the CLI tool via npm:
 
 ```bash
-npm install -g typed-secure-config
+npm install -g @typed-secure-config/cli
+```
+
+Also, by installing as dev-dependency, you can install only in your project. (Not globally)
+In this way, you can run commands from npm scripts.
+
+```bash
+cd path/to/project;
+npm install -D @typed-secure-config/cli
 ```
 
 ## Usage
@@ -18,10 +26,8 @@ The CLI provides commands to initialize, manage, and retrieve configuration valu
 ### General Options
 
 ```plaintext
--V, --version                  Output the version number
 -c, --config-dir <config-dir>  Specify the path to the config file (default: "config")
 -e, --env <environment>        Specify the environment to use for the operation
--h, --help                     Display help for commands
 ```
 
 ### Commands
@@ -48,11 +54,6 @@ Example:
 typed-secure-config set
 ```
 
-Or, you can specify the key option:
-```
-typed-secure-config set -k apiKey
-```
-
 #### `get [options]`
 Get a value from the configuration.
 
@@ -61,33 +62,28 @@ Example:
 typed-secure-config get
 ```
 
-Or, you can specify the key option:
-```
-typed-secure-config get -k apiKey
-```
-
-#### `set-encrypt [options]`
+#### `set-encrypted [options]`
 Set an encrypted value in the configuration.
 
 Example:
 ```bash
-typed-secure-config set-encrypt
+typed-secure-config set-encrypted
 ```
 
 Or, you can specify the key option:
 ```
-typed-secure-config set-encrypt -k apiKey
+typed-secure-config set-encrypted -k apiKey
 ```
 
-#### `get-encrypt [options]`
+#### `get-encrypted [options]`
 Get an encrypted value in the configuration.
 
 Example:
 ```bash
-typed-secure-config get-encrypt
+typed-secure-config get-encrypted
 ```
 
 Or, you can specify the key option:
 ```
-typed-secure-config get-encrypt -k apiKey
+typed-secure-config get-encrypted -k apiKey
 ```

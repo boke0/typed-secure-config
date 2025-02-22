@@ -31,7 +31,7 @@ program
   .version('1.0.0')
   .description('A CLI for managing a config file')
   .option('-c, --config-dir <config-dir>', 'The path to the config file', 'config')
-  .option('-e, --env <config-dir>', 'The environment to set the value in')
+  .option('-e, --env <environment-name>', 'The environment to set the value in')
 
 program
   .command('init')

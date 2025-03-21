@@ -70,44 +70,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.zod = void 0;
-exports.default = typedSecureConfig;
-exports.decodeEncryptionKey = decodeEncryptionKey;
 exports.decryptConfigObject = decryptConfigObject;
+exports.decodeEncryptionKey = decodeEncryptionKey;
 exports.decryptConfigValue = decryptConfigValue;
-var fs = __importStar(require("node:fs"));
-var path = __importStar(require("node:path"));
-function typedSecureConfig(options) {
-    return __awaiter(this, void 0, void 0, function () {
-        var directory, file, config, encryptionKey;
-        var _a, _b, _c;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
-                case 0:
-                    directory = (_a = options.directory) !== null && _a !== void 0 ? _a : 'config';
-                    file = (_b = options.file) !== null && _b !== void 0 ? _b : 'default.json';
-                    config = JSON.parse(fs.readFileSync(path.join(directory, file), (_c = options.encoding) !== null && _c !== void 0 ? _c : 'utf8'));
-                    return [4 /*yield*/, decodeEncryptionKey(options.encryptionKey)];
-                case 1:
-                    encryptionKey = _d.sent();
-                    return [4 /*yield*/, decryptConfigObject(config, encryptionKey)];
-                case 2: return [2 /*return*/, _d.sent()];
-            }
-        });
-    });
-}
-function decodeEncryptionKey(encryptionKey) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, crypto.subtle.importKey('raw', Buffer.from(encryptionKey, 'hex'), {
-                        name: 'AES-CBC',
-                        length: 256
-                    }, true, ['encrypt', 'decrypt'])];
-                case 1: return [2 /*return*/, _a.sent()];
-            }
-        });
-    });
-}
 function decryptConfigObject(object, encryptionKey) {
     return __awaiter(this, void 0, void 0, function () {
         var decryptedConfigObject, _a, _b, _c, _i, key, _d, _e, _f, _g;
@@ -148,6 +113,19 @@ function decryptConfigObject(object, encryptionKey) {
                     _i++;
                     return [3 /*break*/, 1];
                 case 7: return [2 /*return*/, decryptedConfigObject];
+            }
+        });
+    });
+}
+function decodeEncryptionKey(encryptionKey) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, crypto.subtle.importKey('raw', Buffer.from(encryptionKey, 'hex'), {
+                        name: 'AES-CBC',
+                        length: 256
+                    }, true, ['encrypt', 'decrypt'])];
+                case 1: return [2 /*return*/, _a.sent()];
             }
         });
     });

@@ -1,34 +1,3 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-
-interface Options {
-  encryptionKey: string;
-  directory?: string;
-  file?: string;
-  encoding?: 'utf8' | 'ascii';
-}
-
-export default async function typedSecureConfig<T>(options: Options): Promise<T> {
-  const directory = options.directory ?? 'config';
-  const file = options.file ?? 'default.json';
-  const config = JSON.parse(fs.readFileSync(path.join(directory, file), options.encoding ?? 'utf8'));
-  const encryptionKey = await decodeEncryptionKey(options.encryptionKey);
-  return await decryptConfigObject(config, encryptionKey)
-}
-
-export async function decodeEncryptionKey(encryptionKey: string): Promise<CryptoKey> {
-  return await crypto.subtle.importKey(
-    'raw',
-    Buffer.from(encryptionKey, 'hex'),
-    {
-      name: 'AES-CBC',
-      length: 256
-    },
-    true,
-    ['encrypt', 'decrypt']
-  )
-}
-
 export async function decryptConfigObject<T>(object: Record<string, unknown>, encryptionKey: CryptoKey): Promise<T> {
   const decryptedConfigObject: Record<string, unknown> = {};
   for (const key in object) {
@@ -45,6 +14,19 @@ export async function decryptConfigObject<T>(object: Record<string, unknown>, en
     }
   }
   return decryptedConfigObject as T;
+}
+
+export async function decodeEncryptionKey(encryptionKey: string): Promise<CryptoKey> {
+  return await crypto.subtle.importKey(
+    'raw',
+    Buffer.from(encryptionKey, 'hex'),
+    {
+      name: 'AES-CBC',
+      length: 256
+    },
+    true,
+    ['encrypt', 'decrypt']
+  )
 }
 
 export async function decryptConfigValue(text: string, encryptionKey: CryptoKey, iv: Buffer) {

@@ -1,3 +1,5 @@
+import { Buffer } from 'node:buffer';
+
 export async function decryptConfigObject<T>(object: Record<string, unknown>, encryptionKey: CryptoKey): Promise<T> {
   const decryptedConfigObject: Record<string, unknown> = {};
   for (const key in object) {

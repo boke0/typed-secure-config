@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 export async function decryptConfigObject(object, encryptionKey) {
     const decryptedConfigObject = {};
     for (const key in object) {

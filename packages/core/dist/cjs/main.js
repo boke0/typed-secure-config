@@ -73,6 +73,7 @@ exports.zod = void 0;
 exports.decryptConfigObject = decryptConfigObject;
 exports.decodeEncryptionKey = decodeEncryptionKey;
 exports.decryptConfigValue = decryptConfigValue;
+var node_buffer_1 = require("node:buffer");
 function decryptConfigObject(object, encryptionKey) {
     return __awaiter(this, void 0, void 0, function () {
         var decryptedConfigObject, _a, _b, _c, _i, key, _d, _e, _f, _g;
@@ -98,7 +99,7 @@ function decryptConfigObject(object, encryptionKey) {
                     if (!('_encrypted' in object[key] && '_iv' in object[key])) return [3 /*break*/, 4];
                     _d = decryptedConfigObject;
                     _e = key;
-                    return [4 /*yield*/, decryptConfigValue(object[key]['_encrypted'], encryptionKey, Buffer.from(object[key]['_iv'], 'hex'))];
+                    return [4 /*yield*/, decryptConfigValue(object[key]['_encrypted'], encryptionKey, node_buffer_1.Buffer.from(object[key]['_iv'], 'hex'))];
                 case 3:
                     _d[_e] = _h.sent();
                     return [3 /*break*/, 6];
@@ -121,7 +122,7 @@ function decodeEncryptionKey(encryptionKey) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, crypto.subtle.importKey('raw', Buffer.from(encryptionKey, 'hex'), {
+                case 0: return [4 /*yield*/, crypto.subtle.importKey('raw', node_buffer_1.Buffer.from(encryptionKey, 'hex'), {
                         name: 'AES-CBC',
                         length: 256
                     }, true, ['encrypt', 'decrypt'])];
@@ -138,7 +139,7 @@ function decryptConfigValue(text, encryptionKey, iv) {
                 case 0: return [4 /*yield*/, crypto.subtle.decrypt({
                         name: 'AES-CBC',
                         iv: iv,
-                    }, encryptionKey, Buffer.from(text, 'hex'))];
+                    }, encryptionKey, node_buffer_1.Buffer.from(text, 'hex'))];
                 case 1:
                     decipher = _a.sent();
                     return [2 /*return*/, new TextDecoder().decode(decipher)];
